@@ -1,11 +1,23 @@
-// ===== INITIALIZE AOS ANIMATIONS =====
+// ===== MAIN INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize AOS animations
     AOS.init({
         duration: 800,
         easing: 'ease-in-out',
         once: true,
         offset: 100
     });
+    
+    // Initialize all components
+    initHeroAnimations();
+    initHeroInteractions();
+    initProcessStepsAnimation();
+    initCountryCards();
+    initLazyLoading();
+    initFormEnhancements();
+    initCarousel();
+    
+    console.log('Ailes Travel Website Loaded Successfully! 🚀');
 });
 
 // ===== SMOOTH SCROLLING FOR NAVIGATION LINKS =====
@@ -62,68 +74,75 @@ backToTopBtn.addEventListener('click', function() {
 });
 
 // ===== CONTACT FORM HANDLING =====
-const contactForm = document.getElementById('contactForm');
-const successMessage = document.getElementById('successMessage');
+function initFormEnhancements() {
+    const contactForm = document.getElementById('contactForm');
+    const successMessage = document.getElementById('successMessage');
+    
+    if (!contactForm) return;
 
-contactForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(contactForm);
-    const fullName = document.getElementById('fullName').value;
-    const email = document.getElementById('email').value;
-    const whatsapp = document.getElementById('whatsapp').value;
-    const visaType = document.getElementById('visaType').value;
-    const country = document.getElementById('country').value;
-    const message = document.getElementById('message').value;
-    
-    // Basic validation
-    if (!fullName || !email || !whatsapp || !visaType || !country) {
-        showAlert('Please fill in all required fields.', 'danger');
-        return;
-    }
-    
-    // Email validation
-    if (!isValidEmail(email)) {
-        showAlert('Please enter a valid email address.', 'danger');
-        return;
-    }
-    
-    // Phone validation
-    if (!isValidPhone(whatsapp)) {
-        showAlert('Please enter a valid WhatsApp number.', 'danger');
-        return;
-    }
-    
-    // Show loading state
-    const submitBtn = contactForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
-    submitBtn.disabled = true;
-    
-    // Simulate form submission (replace with actual API call)
-    setTimeout(() => {
-        // Reset form
-        contactForm.reset();
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Show success message
-        successMessage.style.display = 'block';
-        successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Get form data
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const whatsapp = document.getElementById('whatsapp').value;
+        const visaType = document.getElementById('visaType').value;
+        const country = document.getElementById('country').value;
+        const message = document.getElementById('message').value;
         
-        // Reset button
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
+        // Basic validation
+        if (!fullName || !email || !whatsapp || !visaType || !country) {
+            showAlert('Please fill in all required fields.', 'danger');
+            return;
+        }
         
-        // Hide success message after 5 seconds
+        // Email validation
+        if (!isValidEmail(email)) {
+            showAlert('Please enter a valid email address.', 'danger');
+            return;
+        }
+        
+        // Phone validation
+        if (!isValidPhone(whatsapp)) {
+            showAlert('Please enter a valid WhatsApp number.', 'danger');
+            return;
+        }
+        
+        // Show loading state
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+        submitBtn.disabled = true;
+        
+        // Simulate form submission
         setTimeout(() => {
-            successMessage.style.display = 'none';
-        }, 5000);
-        
-        // Send WhatsApp message (optional)
-        sendWhatsAppMessage(fullName, email, whatsapp, visaType, country, message);
-        
-    }, 2000);
-});
+            // Reset form
+            contactForm.reset();
+            
+            // Show success message
+            if (successMessage) {
+                successMessage.style.display = 'block';
+                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            // Reset button
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                if (successMessage) {
+                    successMessage.style.display = 'none';
+                }
+            }, 5000);
+            
+            // Send WhatsApp message
+            sendWhatsAppMessage(fullName, email, whatsapp, visaType, country, message);
+            
+        }, 2000);
+    });
+}
 
 // ===== FORM VALIDATION FUNCTIONS =====
 function isValidEmail(email) {
@@ -161,7 +180,7 @@ function showAlert(message, type = 'info') {
 
 // ===== WHATSAPP INTEGRATION =====
 function sendWhatsAppMessage(name, email, phone, visaType, country, message) {
-    const whatsappNumber = '256700123456'; // Replace with actual WhatsApp number
+    const whatsappNumber = '256704833021'; // Updated to correct number
     const text = `
 *New Visa Consultation Request*
 
@@ -173,7 +192,7 @@ function sendWhatsAppMessage(name, email, phone, visaType, country, message) {
 💬 *Message:* ${message || 'No additional message'}
 
 ---
-Sent from Ailes Consult Website
+Sent from Ailes Travel Website
     `.trim();
     
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
@@ -434,11 +453,13 @@ document.addEventListener('shown.bs.modal', function(e) {
     }
 });
 
-// ===== VISA CAROUSEL AUTO-SLIDE =====
-document.addEventListener('DOMContentLoaded', function() {
+// ===== VISA CAROUSEL INITIALIZATION =====
+function initCarousel() {
     const visaCarousel = document.getElementById('visaApprovalCarousel');
     
-    if (visaCarousel) {
+    if (!visaCarousel) return;
+    
+    try {
         // Initialize Bootstrap carousel with auto-slide
         const carousel = new bootstrap.Carousel(visaCarousel, {
             interval: 4000,        // Slide every 4 seconds
@@ -448,10 +469,6 @@ document.addEventListener('DOMContentLoaded', function() {
             touch: true            // Enable touch/swipe support
         });
 
-        // Optional: Add custom controls for better UX
-        const carouselItems = visaCarousel.querySelectorAll('.carousel-item');
-        const totalSlides = carouselItems.length;
-        
         // Pause carousel when user interacts with controls
         const carouselControls = visaCarousel.querySelectorAll('.carousel-control-prev, .carousel-control-next, .carousel-indicators button');
         
@@ -465,32 +482,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Add visual feedback for auto-sliding
-        let slideIndicator = null;
-        
-        // Show slide progress indicator (optional)
-        function showSlideProgress() {
-            if (!slideIndicator) {
-                slideIndicator = document.createElement('div');
-                slideIndicator.className = 'slide-progress';
-                slideIndicator.innerHTML = '<div class="progress-bar"></div>';
-                visaCarousel.appendChild(slideIndicator);
-            }
-            
-            const progressBar = slideIndicator.querySelector('.progress-bar');
-            progressBar.style.animation = 'slideProgress 4s linear infinite';
-        }
-
         // Enhanced carousel event listeners
         visaCarousel.addEventListener('slide.bs.carousel', function(e) {
-            console.log(`Sliding to slide ${e.to + 1} of ${totalSlides}`);
-        });
-
-        visaCarousel.addEventListener('slid.bs.carousel', function(e) {
-            // Update any custom indicators or analytics
-            const activeSlide = e.relatedTarget;
-            const slideTitle = activeSlide.querySelector('.visa-type')?.textContent || 'Unknown';
-            console.log(`Now showing: ${slideTitle}`);
+            console.log(`Sliding to slide ${e.to + 1}`);
         });
 
         // Pause carousel when page is not visible (performance optimization)
@@ -503,10 +497,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Start the carousel
-        showSlideProgress();
         carousel.cycle();
+        
+    } catch (error) {
+        console.warn('Carousel initialization failed:', error);
     }
-});
+}
 
 // ===== FAQ ACCESSIBILITY IMPROVEMENTS =====
 document.addEventListener('DOMContentLoaded', function() {
@@ -603,41 +599,43 @@ function initLazyLoading() {
 }
 
 // ===== ENHANCED HERO INTERACTIONS =====
-document.addEventListener('DOMContentLoaded', function() {
-    initHeroAnimations();
-    initHeroInteractions();
-});
-
 function initHeroAnimations() {
     // Staggered animation for floating cards
     const floatingCards = document.querySelectorAll('.floating-card');
     floatingCards.forEach((card, index) => {
-        card.style.animationDelay = `${index * 0.5}s`;
+        if (card) {
+            card.style.animationDelay = `${index * 0.5}s`;
+        }
     });
     
     // Parallax effect for hero background
     const heroPattern = document.querySelector('.hero-bg-pattern');
     if (heroPattern) {
-        window.addEventListener('scroll', function() {
+        const parallaxScroll = debounce(function() {
             const scrolled = window.pageYOffset;
-            const rate = scrolled * -0.5;
+            const rate = scrolled * -0.3;
             heroPattern.style.transform = `translateY(${rate}px)`;
-        });
+        }, 10);
+        
+        window.addEventListener('scroll', parallaxScroll);
     }
     
     // Sequential document reveal animation
     const documents = document.querySelectorAll('.document');
     documents.forEach((doc, index) => {
-        setTimeout(() => {
-            doc.style.opacity = '0';
-            doc.style.transform = 'translateY(30px) rotate(0deg)';
-            doc.style.transition = 'all 0.6s ease';
-            
+        if (doc) {
             setTimeout(() => {
-                doc.style.opacity = '1';
-                doc.style.transform = 'translateY(0) rotate(' + (index % 2 === 0 ? '5deg' : '-3deg') + ')';
-            }, 100);
-        }, 2000 + (index * 300));
+                doc.style.opacity = '0';
+                doc.style.transform = 'translateY(30px) rotate(0deg)';
+                doc.style.transition = 'all 0.6s ease';
+                
+                setTimeout(() => {
+                    doc.style.opacity = '1';
+                    const rotation = index % 2 === 0 ? '5deg' : '-3deg';
+                    doc.style.transform = `translateY(0) rotate(${rotation})`;
+                }, 100);
+            }, 1000 + (index * 300));
+        }
     });
 }
 
@@ -645,9 +643,12 @@ function initHeroInteractions() {
     // Interactive hover effects for documents
     const documents = document.querySelectorAll('.document');
     documents.forEach(doc => {
+        if (!doc) return;
+        
         doc.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-10px) rotate(0deg) scale(1.05)';
             this.style.zIndex = '10';
+            this.style.transition = 'all 0.3s ease';
         });
         
         doc.addEventListener('mouseleave', function() {
@@ -673,9 +674,12 @@ function initHeroInteractions() {
     // Floating cards interaction
     const miniCards = document.querySelectorAll('.success-mini-card');
     miniCards.forEach(card => {
+        if (!card) return;
+        
         card.addEventListener('mouseenter', function() {
             this.style.transform = 'scale(1.1)';
             this.style.boxShadow = '0 12px 35px rgba(0, 50, 98, 0.25)';
+            this.style.transition = 'all 0.3s ease';
         });
         
         card.addEventListener('mouseleave', function() {
@@ -714,40 +718,128 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(initHeroObserver, 1000); // Delay to let other animations settle
 });
 
-// Dynamic success rate counter animation
-function animateSuccessRate() {
-    const successRateElement = document.querySelector('.trust-stat h3');
-    if (successRateElement && successRateElement.textContent.includes('98%')) {
-        let current = 0;
-        const target = 98;
-        const increment = target / 50;
-        
-        const counter = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-                current = target;
-                clearInterval(counter);
-            }
-            successRateElement.textContent = Math.round(current) + '%';
-        }, 50);
-    }
-}
-
-// Trigger success rate animation when hero comes into view
-const heroSection = document.querySelector('.hero-section');
-if (heroSection) {
-    const heroObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                setTimeout(animateSuccessRate, 1500);
-                heroObserver.unobserve(entry.target);
+// ===== ADDITIONAL ENHANCEMENTS =====
+// Add smooth scrolling enhancement
+function enhanceSmoothScrolling() {
+    // Enhanced smooth scrolling for all anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
+            
+            if (targetSection) {
+                const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 0;
+                const targetPosition = targetSection.offsetTop - navbarHeight - 20;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Close mobile menu if open
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+                    bsCollapse.hide();
+                }
             }
         });
     });
+}
+
+// Add loading state management
+function addLoadingStates() {
+    // Add loading class to body when page loads
+    document.body.classList.add('loading');
     
-    heroObserver.observe(heroSection);
+    window.addEventListener('load', function() {
+        document.body.classList.remove('loading');
+        document.body.classList.add('loaded');
+        
+        // Trigger any load-dependent animations
+        setTimeout(() => {
+            document.body.classList.add('animations-ready');
+        }, 500);
+    });
+}
+
+// Add error handling for missing elements
+function addErrorHandling() {
+    window.addEventListener('error', function(e) {
+        console.warn('Minor error caught:', e.message);
+        // Continue gracefully without breaking the site
+    });
+    
+    // Handle Bootstrap component failures gracefully
+    if (typeof bootstrap === 'undefined') {
+        console.warn('Bootstrap not loaded - some interactive features may not work');
+    }
+}
+
+// Initialize enhanced features
+document.addEventListener('DOMContentLoaded', function() {
+    enhanceSmoothScrolling();
+    addLoadingStates();
+    addErrorHandling();
+});
+
+// ===== QUICK FIXES =====
+// Fix any potential carousel issues
+setTimeout(() => {
+    const carousel = document.querySelector('#visaApprovalCarousel');
+    if (carousel && typeof bootstrap !== 'undefined') {
+        try {
+            new bootstrap.Carousel(carousel);
+        } catch (e) {
+            console.warn('Carousel auto-init failed, will work manually');
+        }
+    }
+}, 2000);
+
+// ===== SUCCESS METRICS ANIMATION =====
+function animateSuccessMetrics() {
+    const metrics = document.querySelectorAll('.trust-stat h3');
+    
+    metrics.forEach(metric => {
+        const text = metric.textContent;
+        const hasPercent = text.includes('%');
+        const hasPlus = text.includes('+');
+        const number = parseInt(text);
+        
+        if (number > 0) {
+            let current = 0;
+            const increment = number / 30;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= number) {
+                    current = number;
+                    clearInterval(timer);
+                }
+                
+                const suffix = hasPercent ? '%' : (hasPlus ? '+' : '');
+                metric.textContent = Math.floor(current) + suffix;
+            }, 50);
+        }
+    });
+}
+
+// Trigger metrics animation when hero is visible
+const heroSection = document.querySelector('.hero-section');
+if (heroSection) {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                setTimeout(animateSuccessMetrics, 1000);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    observer.observe(heroSection);
 }
 
 // ===== INITIALIZATION =====
-console.log('Ailes Consult Website Loaded Successfully! 🚀');
-console.log('For support, contact: info@ailesconsult.com');
+console.log('Ailes Travel Website Loaded Successfully! 🚀');
+console.log('For support, contact: info@ailestravel.com');
