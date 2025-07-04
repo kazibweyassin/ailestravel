@@ -434,6 +434,80 @@ document.addEventListener('shown.bs.modal', function(e) {
     }
 });
 
+// ===== VISA CAROUSEL AUTO-SLIDE =====
+document.addEventListener('DOMContentLoaded', function() {
+    const visaCarousel = document.getElementById('visaApprovalCarousel');
+    
+    if (visaCarousel) {
+        // Initialize Bootstrap carousel with auto-slide
+        const carousel = new bootstrap.Carousel(visaCarousel, {
+            interval: 4000,        // Slide every 4 seconds
+            ride: 'carousel',      // Start cycling immediately
+            pause: 'hover',        // Pause on hover
+            wrap: true,            // Loop back to first slide after last
+            touch: true            // Enable touch/swipe support
+        });
+
+        // Optional: Add custom controls for better UX
+        const carouselItems = visaCarousel.querySelectorAll('.carousel-item');
+        const totalSlides = carouselItems.length;
+        
+        // Pause carousel when user interacts with controls
+        const carouselControls = visaCarousel.querySelectorAll('.carousel-control-prev, .carousel-control-next, .carousel-indicators button');
+        
+        carouselControls.forEach(control => {
+            control.addEventListener('click', function() {
+                // Pause auto-slide for 8 seconds after manual interaction
+                carousel.pause();
+                setTimeout(() => {
+                    carousel.cycle();
+                }, 8000);
+            });
+        });
+
+        // Add visual feedback for auto-sliding
+        let slideIndicator = null;
+        
+        // Show slide progress indicator (optional)
+        function showSlideProgress() {
+            if (!slideIndicator) {
+                slideIndicator = document.createElement('div');
+                slideIndicator.className = 'slide-progress';
+                slideIndicator.innerHTML = '<div class="progress-bar"></div>';
+                visaCarousel.appendChild(slideIndicator);
+            }
+            
+            const progressBar = slideIndicator.querySelector('.progress-bar');
+            progressBar.style.animation = 'slideProgress 4s linear infinite';
+        }
+
+        // Enhanced carousel event listeners
+        visaCarousel.addEventListener('slide.bs.carousel', function(e) {
+            console.log(`Sliding to slide ${e.to + 1} of ${totalSlides}`);
+        });
+
+        visaCarousel.addEventListener('slid.bs.carousel', function(e) {
+            // Update any custom indicators or analytics
+            const activeSlide = e.relatedTarget;
+            const slideTitle = activeSlide.querySelector('.visa-type')?.textContent || 'Unknown';
+            console.log(`Now showing: ${slideTitle}`);
+        });
+
+        // Pause carousel when page is not visible (performance optimization)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                carousel.pause();
+            } else {
+                carousel.cycle();
+            }
+        });
+
+        // Start the carousel
+        showSlideProgress();
+        carousel.cycle();
+    }
+});
+
 // ===== INITIALIZATION =====
 console.log('Ailes Consult Website Loaded Successfully! 🚀');
 console.log('For support, contact: info@ailesconsult.com');
