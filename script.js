@@ -508,6 +508,246 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// ===== FAQ ACCESSIBILITY IMPROVEMENTS =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Improve keyboard navigation for FAQ
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+    
+    accordionButtons.forEach((button, index) => {
+        button.addEventListener('keydown', function(e) {
+            const currentIndex = index;
+            const totalButtons = accordionButtons.length;
+            
+            switch(e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    const nextIndex = (currentIndex + 1) % totalButtons;
+                    accordionButtons[nextIndex].focus();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    const prevIndex = (currentIndex - 1 + totalButtons) % totalButtons;
+                    accordionButtons[prevIndex].focus();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    accordionButtons[0].focus();
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    accordionButtons[totalButtons - 1].focus();
+                    break;
+            }
+        });
+    });
+});
+
+// ===== PROCESS STEPS ANIMATION =====
+function initProcessStepsAnimation() {
+    const processSteps = document.querySelectorAll('.process-step');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }, index * 200);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    processSteps.forEach(step => {
+        step.style.opacity = '0';
+        step.style.transform = 'translateY(30px)';
+        step.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(step);
+    });
+}
+
+// ===== COUNTRY CARDS INTERACTION =====
+function initCountryCards() {
+    const countryCards = document.querySelectorAll('.country-card');
+    
+    countryCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+}
+
+// ===== PERFORMANCE OPTIMIZATIONS =====
+// Lazy load images
+function initLazyLoading() {
+    const images = document.querySelectorAll('img[data-src]');
+    
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+                imageObserver.unobserve(img);
+            }
+        });
+    });
+    
+    images.forEach(img => imageObserver.observe(img));
+}
+
+// ===== ENHANCED HERO INTERACTIONS =====
+document.addEventListener('DOMContentLoaded', function() {
+    initHeroAnimations();
+    initHeroInteractions();
+});
+
+function initHeroAnimations() {
+    // Staggered animation for floating cards
+    const floatingCards = document.querySelectorAll('.floating-card');
+    floatingCards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.5}s`;
+    });
+    
+    // Parallax effect for hero background
+    const heroPattern = document.querySelector('.hero-bg-pattern');
+    if (heroPattern) {
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            heroPattern.style.transform = `translateY(${rate}px)`;
+        });
+    }
+    
+    // Sequential document reveal animation
+    const documents = document.querySelectorAll('.document');
+    documents.forEach((doc, index) => {
+        setTimeout(() => {
+            doc.style.opacity = '0';
+            doc.style.transform = 'translateY(30px) rotate(0deg)';
+            doc.style.transition = 'all 0.6s ease';
+            
+            setTimeout(() => {
+                doc.style.opacity = '1';
+                doc.style.transform = 'translateY(0) rotate(' + (index % 2 === 0 ? '5deg' : '-3deg') + ')';
+            }, 100);
+        }, 2000 + (index * 300));
+    });
+}
+
+function initHeroInteractions() {
+    // Interactive hover effects for documents
+    const documents = document.querySelectorAll('.document');
+    documents.forEach(doc => {
+        doc.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) rotate(0deg) scale(1.05)';
+            this.style.zIndex = '10';
+        });
+        
+        doc.addEventListener('mouseleave', function() {
+            const originalRotation = this.classList.contains('doc-1') ? '5deg' : 
+                                   this.classList.contains('doc-2') ? '-3deg' : '8deg';
+            this.style.transform = `translateY(0) rotate(${originalRotation}) scale(1)`;
+            this.style.zIndex = '';
+        });
+    });
+    
+    // Pulsing success circle on hover
+    const successCircle = document.querySelector('.success-circle');
+    if (successCircle) {
+        successCircle.addEventListener('mouseenter', function() {
+            this.style.animation = 'pulse 0.5s ease-in-out';
+        });
+        
+        successCircle.addEventListener('mouseleave', function() {
+            this.style.animation = 'pulse 2s ease-in-out infinite';
+        });
+    }
+    
+    // Floating cards interaction
+    const miniCards = document.querySelectorAll('.success-mini-card');
+    miniCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.1)';
+            this.style.boxShadow = '0 12px 35px rgba(0, 50, 98, 0.25)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+            this.style.boxShadow = '0 8px 25px rgba(0, 50, 98, 0.15)';
+        });
+    });
+}
+
+// Intersection Observer for hero animations
+function initHeroObserver() {
+    const heroElements = document.querySelectorAll('.floating-card, .document, .decoration');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    heroElements.forEach(element => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(element);
+    });
+}
+
+// Call the observer initialization
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(initHeroObserver, 1000); // Delay to let other animations settle
+});
+
+// Dynamic success rate counter animation
+function animateSuccessRate() {
+    const successRateElement = document.querySelector('.trust-stat h3');
+    if (successRateElement && successRateElement.textContent.includes('98%')) {
+        let current = 0;
+        const target = 98;
+        const increment = target / 50;
+        
+        const counter = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(counter);
+            }
+            successRateElement.textContent = Math.round(current) + '%';
+        }, 50);
+    }
+}
+
+// Trigger success rate animation when hero comes into view
+const heroSection = document.querySelector('.hero-section');
+if (heroSection) {
+    const heroObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                setTimeout(animateSuccessRate, 1500);
+                heroObserver.unobserve(entry.target);
+            }
+        });
+    });
+    
+    heroObserver.observe(heroSection);
+}
+
 // ===== INITIALIZATION =====
 console.log('Ailes Consult Website Loaded Successfully! 🚀');
 console.log('For support, contact: info@ailesconsult.com');
